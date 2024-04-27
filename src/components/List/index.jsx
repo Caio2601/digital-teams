@@ -3,16 +3,20 @@ import { Button } from "primereact/button";
 import { Sidebar } from "primereact/sidebar";
 import { Dialog } from "primereact/dialog";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState} from "react";
 import { InputText } from "primereact/inputtext";
 import { InputMask } from "primereact/inputmask";
 import { useForm } from "react-hook-form";
+import { FilterContext } from "../../App";
 
 const List = () => {
   const [mostrarSidebar, setMostrarSidebar] = useState(false);
   const [mostrarSidebarAdd, setMostrarSidebarAdd] = useState(false);
   const [mostrarDialog, setMostrarDialog] = useState(false);
   const [teams, setTeams] = useState([]);
+  const { filter } = useContext(FilterContext);
+  const [teamsFiltered, setTeamsFiltered] = useState([]);
+  const teamSelected = useRef();
   
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -86,12 +90,24 @@ const List = () => {
     buscarTeams();
   }, []);
 
-  const titulo = (nome) => (
+  useEffect(() => {
+    if(filter != ""){
+      setTeamsFiltered([...teams.filter((team) => team.nome.toLowerCase().includes(filter.toLowerCase()))]);
+      return;
+    }
+    setTeamsFiltered(teams)
+  }, [filter, teams])
+
+  const titulo = (nome, id) => (
     <div className="flex justify-content-between align-items-center text-lg">
       {nome}
       <i
         className="pi pi-eye cursor-pointer"
-        onClick={() => setMostrarDialog(true)}
+        title="nome1, nome2..."
+        onClick={() => {
+          teamSelected.current = id;
+          setMostrarDialog(true)
+        }}
       ></i>
     </div>
   );
@@ -120,11 +136,11 @@ const List = () => {
       </h2>
 
       {teams &&
-        teams.map((team) => (
+        teamsFiltered.map((team) => (
           <Card
             key={`team${team.id}`}
             style={{ width: "calc(20% - 13px)" }}
-            title={titulo(team.nome)}
+            title={titulo(team.nome, team.id)}
             footer={footer(team.id)}
           >
             <h1 className="mx-auto flex flex-column text-center">
@@ -194,8 +210,17 @@ const List = () => {
           />
         </form>
       </Sidebar>
-      <Dialog visible={mostrarDialog} onHide={() => setMostrarDialog(false)}>
-        Lista de nomes do time
+      <Dialog 
+        visible={mostrarDialog} 
+        onHide={() => setMostrarDialog(false)}>
+        Lista de nomes do time:
+        {
+          teamSelected.current && teams.find(team => team.id == teamSelected.current).participantes.map((nome, index) => (
+            <h5 key={index} className="flex justify-content-between align-items-center">
+              {nome} <i className="pi pi-trash" onClick={() => alert("deletou")}></i>
+            </h5>
+          ))
+        }
       </Dialog>
       <ConfirmDialog />
     </section>
