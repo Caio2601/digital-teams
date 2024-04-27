@@ -14,8 +14,17 @@ const List = () => {
   const [mostrarDialog, setMostrarDialog] = useState(false);
   const [teams, setTeams] = useState([]);
   
-  const { register, handleSubmit, reset } = useForm();
-  const { register: registerP, handleSubmit: handleSubmitP, reset: resetP, setValue: setValueP } = useForm();
+  const { register, handleSubmit, reset } = useForm({
+    defaultValues: {
+      participantes: []
+    }
+  });
+  const { 
+    register: registerP,
+    handleSubmit: handleSubmitP,
+    reset: resetP,
+    setValue: setValueP
+  } = useForm();
 
   async function cadastrar(dados){
     const request = await fetch('http://localhost:3000/teams',{
@@ -33,8 +42,19 @@ const List = () => {
     }
   }
 
-  function addParticipante(dados){
-
+  async function addParticipante(dados){
+    const request = await fetch("http://localhost:3000/teams", {
+      method: "patch",
+      headers: {
+        "Content-type": "application/json"
+      },
+      body: JSON.stringify(dados)
+    });
+    const response = await request.json();
+    if(response){
+      resetP();
+      buscarTeams();
+    }
   }
 
   function confirmacao(id) {
