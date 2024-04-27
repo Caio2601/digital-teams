@@ -43,12 +43,14 @@ const List = () => {
   }
 
   async function addParticipante(dados){
-    const request = await fetch("http://localhost:3000/teams", {
-      method: "patch",
+    const team = teams.find(team => team.id == dados.id);
+    team.participantes.push(dados.nome);
+    const request = await fetch(`http://localhost:3000/teams/${dados.id}`, {
+      method: "put",
       headers: {
         "Content-type": "application/json"
       },
-      body: JSON.stringify(dados)
+      body: JSON.stringify(team)
     });
     const response = await request.json();
     if(response){

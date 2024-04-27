@@ -2,15 +2,24 @@
   "teams": [
     {
       "id": "1",
-      "nome": "team fs07",
+      "nome": "team fs",
       "capacidade": 20,
-      "participantes": ["Fernando"]
+      "participantes": [
+        "Bruno",
+        "Fernando",
+        "Natan"
+      ]
     },
     {
       "id": "2",
       "nome": "team fs31",
       "capacidade": 20,
-      "participantes": []
+      "participantes": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ]
     },
     {
       "id": "3",
